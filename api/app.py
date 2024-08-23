@@ -64,15 +64,26 @@ def index():
         (msg['content'] for msg in reversed(conversation_history) if msg['role'] == 'assistant'), '')
     return render_template('index.html', initial_message=format_response(last_assistant_message))
 
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+# Add this new global variable
+current_model = "llama3-8b-8192"
 
 @app.route('/execute', methods=['POST'])
 def execute():
+    global current_model
     command = request.json['command']
+    selected_model = request.json.get('model', current_model)
+
+    # Update the current model
+    current_model = selected_model
 
     conversation_history.append({"role": "user", "content": command})
 
     completion = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model=current_model,
         messages=conversation_history,
         temperature=1,
         max_tokens=1024,
@@ -84,6 +95,20 @@ def execute():
     conversation_history.append({"role": "assistant", "content": response})
 
     return jsonify({"response": format_response(response)})
+
+@app.route('/get_model', methods=['GET'])
+def get_model():
+    return jsonify({"model": current_model})
+
+@app.route('/set_model', methods=['POST'])
+def set_model():
+    global current_model
+    new_model = request.json['model']
+    if new_model in ["llama3-8b-8192", "llama3-70b-8192", "llama-3.1-8b-instant", "llama-3.1-70b-versatile"]:
+        current_model = new_model
+        return jsonify({"success": True, "model": current_model})
+    else:
+        return jsonify({"success": False, "error": "Invalid model selection"}), 400
 
 
 @app.route('/reset', methods=['POST'])
