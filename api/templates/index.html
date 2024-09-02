@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Simulator Terminal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .model-select {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: #000;
+            color: #90EE90;
+            border: 1px solid #90EE90;
+            padding-right: 10px;  /* Increased padding */
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;  /* Increased font size */
+        }
+    </style>
 </head>
 <body>
     <canvas id="matrix-bg"></canvas>
@@ -23,6 +36,21 @@
             <input type="text" id="command-input" autofocus>
         </div>
     </div>
+    <select id="model-select" class="model-select">
+        <option value="llama3-8b-8192">Llama 3 - 8B</option>
+        <option value="llama3-70b-8192">Llama 3 - 70B</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 - 8B</option>
+    </select>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Reset the simulator when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await fetch('/reset', { method: 'POST' });
+            } catch (error) {
+                console.error('Error resetting the simulator:', error);
+            }
+        });
+    </script>
 </body>
 </html>
