@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Simulator Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+    <div id="home">
+        <h1>Welcome to the Quantum Realm</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">World Simulator</a></li>
+                <!-- <li><a href="#">Crazy Feature 1</a></li> -->
+                <!-- <li><a href="#">Crazy Feature 2</a></li> -->
+                <!-- <li><a href="#">Crazy Feature 3</a></li> -->
+            </ul>
+        </nav>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Initialize the matrix effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const text = 'WORLD SIM';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(144, 238, 144, 0.6)';  // Light green with transparency
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const character = text[Math.floor(Math.random() * text.length)];
+                ctx.fillText(character, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+
+        setInterval(draw, 30);
+    </script>
+</body>
+</html>

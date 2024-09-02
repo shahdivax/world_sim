@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from groq import Groq
 import re
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -20,7 +20,7 @@ conversation_history = [
     {"role": "system", "content": system_message},
     {"role": "user", "content": "<cmd>cd ..</cmd>"},
     {"role": "assistant",
-     "content": "simulator@llama:~$ <cmd>ls</cmd>\n\nDocuments  Downloads  Pictures  Videos\n\nsimulator@llama:~$ <cmd>ls -a</cmd>\n\n.  ..  .bash_history  .bash_logout  .bashrc  .profile  Documents  Downloads  Pictures  Videos\n\nsimulator@llama:~$"},
+     "content": "simulator@llama:~$ <cmd>ls</cmd>\n\nDocuments  Downloads  Pictures  Videos\n\nsimulator@llama:~$ <cmd>ls -a</cmd>\n\n.  ..  .bash_history  .bash_logout  .bashrc  .profile  Documents  Downloads  Pictures  Videos\n\nsimulator@llama:~$ <cmd>ls</cmd>\n\nDocuments  Downloads  Pictures  Videos\n\nsimulator@llama:~$ <cmd>ls -a</cmd>\n\n.  ..  .bash_history  .bash_logout  .bashrc  .profile  Documents  Downloads  Pictures  Videos\n\nsimulator@llama:~$"},
     {"role": "user", "content": "<cmd>cd ..</cmd>"},
     {"role": "assistant",
      "content": "simulator@llama:/home$ <cmd>ls</cmd>\n\nsimulator\n\nsimulator@llama:/home$ <cmd>cd ..</cmd>\n\nsimulator@llama:/$ <cmd>ls</cmd>\n\nbin   dev  home        lib    media  opt   root  sbin  sys  usr\nboot  etc  initrd.img  lib64  mnt    proc  run   srv   tmp  var\n\nsimulator@llama:/$"},
@@ -65,14 +65,21 @@ def index():
     return render_template('index.html', initial_message=format_response(last_assistant_message))
 
 
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+
 @app.route('/execute', methods=['POST'])
 def execute():
-    command = request.json['command']
+    data = request.json
+    command = data['command']
+    model = data.get('model', 'llama3-8b-8192')  # Default to 'llama3-8b-8192' if no model is provided
 
     conversation_history.append({"role": "user", "content": command})
 
     completion = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model=model,
         messages=conversation_history,
         temperature=1,
         max_tokens=1024,
@@ -80,7 +87,6 @@ def execute():
     )
 
     response = completion.choices[0].message.content
-    # print(response)
     conversation_history.append({"role": "assistant", "content": response})
 
     return jsonify({"response": format_response(response)})

@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
     const input = document.getElementById('command-input');
+    const modelSelect = document.getElementById('model');
 
     input.addEventListener('keypress', async (e) => {
         if (e.key === 'Enter') {
             const command = input.value;
+            const model = modelSelect.value;
             input.value = '';
 
             // Display the command
@@ -15,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (command.toLowerCase() === 'exit') {
                 output.innerHTML += '<div>Exiting World Simulator. Goodbye!</div>';
             } else {
-                await executeCommand(command);
+                await executeCommand(command, model);
             }
 
             // Scroll to bottom
@@ -23,14 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function executeCommand(command) {
+    async function executeCommand(command, model) {
         try {
             const response = await fetch('/execute', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ command }),
+                body: JSON.stringify({ command, model }),
             });
 
             const data = await response.json();
@@ -91,4 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setInterval(draw, 30);
+
+    const commandInput = document.getElementById('command-input');
+
+    commandInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            const command = commandInput.value.trim();
+            if (command.toLowerCase() === 'exit') {
+                window.location.href = '/home';
+            } else {
+                // ... existing code to handle other commands ...
+            }
+        }
+    });
 });
