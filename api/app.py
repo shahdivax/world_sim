@@ -65,9 +65,9 @@ def index():
     return render_template('index.html', initial_message=format_response(last_assistant_message))
 
 
-@app.route('/home')
-def home():
-    return render_template('home.html')
+# @app.route('/home')
+# def home():
+#     return render_template('home.html')
 
 
 @app.route('/execute', methods=['POST'])
