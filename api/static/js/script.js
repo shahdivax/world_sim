@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await resetSimulator();
             } else if (command.toLowerCase() === 'exit') {
                 output.innerHTML += '<div>Exiting World Simulator. Goodbye!</div>';
+                window.location.href = '/home';  // Redirect to home page
             } else {
                 await executeCommand(command, model);
             }

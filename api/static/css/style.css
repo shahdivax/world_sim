@@ -91,7 +91,7 @@ body {
 }
 
 #model-selection {
-    position: absolute;
+    position: fixed;  /* Changed from absolute to fixed */
     top: 20px;
     right: 20px;
     background-color: rgba(0, 0, 0, 0.7);
